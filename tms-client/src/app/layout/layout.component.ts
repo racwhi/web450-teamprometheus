@@ -46,6 +46,8 @@ template: `
   <a routerLink="/tasks/list" routerLinkActive="active" >List Tasks</a>
   <a routerLink="/tasks/create" routerLinkActive="active" >Create Tasks</a>
   <a routerLink="/tasks/manage" routerLinkActive="active" >Manage Tasks</a>
+  <a routerLink="/tasks/read" routerLinkActive="active" >Read Tasks</a>
+
  </div>
 </div>
 
@@ -136,7 +138,7 @@ styles: `
 export class LayoutComponent implements OnInit {
   isTasksMenuOpen = false;
   isProjectsMenuOpen = false;
-  showTopTaskList = true;
+  showTopTaskList = true; // remove 
 
   constructor(private router: Router) {}
 
@@ -153,7 +155,11 @@ export class LayoutComponent implements OnInit {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
    
-      this.showTopTaskList = !event.urlAfterRedirects.includes('/tasks/list');
+      this.showTopTaskList = !event.urlAfterRedirects.includes('/tasks/list');//remove
+      /*  this.showTopTaskList = !(
+  event.urlAfterRedirects.includes('/tasks/list') ||
+  event.urlAfterRedirects.includes('/tasks/read')
+);*/
     });
   }
 }

@@ -9,6 +9,7 @@ import { ManageProjectComponent } from './projects/manage-project/manage-project
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { ListTasksComponent } from './tasks/list-tasks/list-tasks.component';
+import { ReadTaskComponent } from './tasks/read-task/read-task.component';
  
 
 //export routes
@@ -30,6 +31,7 @@ children:[
   {path: 'list', component:ListTasksComponent},
     {path: 'create', component:CreateTaskComponent},
      {path: 'manage', component:ManageTaskComponent},
+    {path: 'read', component:ReadTaskComponent},
      {path:'', redirectTo:'list',pathMatch: 'full' }//default to create
      
 ]

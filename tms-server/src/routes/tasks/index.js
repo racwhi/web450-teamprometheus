@@ -16,6 +16,11 @@ router.get('/', async (req, res, next) => {
      }
 });
 
+// Get all tasks (Read all)
+router.get('/tasks', (req, res) => {
+  res.json(tasks);
+});
+
 //GET: get by id
 router.get('/:id', async (req, res, next) => {
      try {
