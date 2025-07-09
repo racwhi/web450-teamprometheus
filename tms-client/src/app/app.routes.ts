@@ -30,7 +30,7 @@ children:[
   {path: 'list', component:ListTasksComponent},
     {path: 'create', component:CreateTaskComponent},
      {path: 'manage', component:ManageTaskComponent},
-     {path:'', redirectTo:'list',pathMatch: 'full' }//default to create
+     {path:'', redirectTo:'create',pathMatch: 'full' }//default to create
      
 ]
 },
