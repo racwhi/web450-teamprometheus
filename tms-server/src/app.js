@@ -6,31 +6,33 @@
  */
 
 // require statements
-const express = require('express');
-const createError = require('http-errors');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const mongoose = require('mongoose');
+const express         = require('express');
+const createError     = require('http-errors');
+const cookieParser    = require('cookie-parser');
+const logger          = require('morgan');
+const mongoose        = require('mongoose');
 const { notFoundHandler, errorHandler } = require('./error-handler');
 
-const indexRouter = require('./routes/index');
-const taskRouter = require('./routes/tasks');
-const projectRouter = require('./routes/projects');
+const indexRouter     = require('./routes/index');
+const taskRouter      = require('./routes/tasks');
+const projectRouter   = require('./routes/projects');
 
 const app = express();
 
-// Only connect to MongoDB when this file is run directly
-if (require.main === module) {
-  const mongoURI = 'mongodb+srv://web335Admin:Password01@tms-cluster.ebh5hd3.mongodb.net/tms?retryWrites=true&w=majority&appName=tms-cluster';
+// ─── UNCONDITIONAL MONGODB CONNECT ────────────────────────────────────────────
+const mongoURI = 'mongodb+srv://web335Admin:Password01@tms-cluster.ebh5hd3.mongodb.net/tms?retryWrites=true&w=majority&appName=tms-cluster';
 
-  mongoose.connect(mongoURI)
-    .then(() => console.log('MongoDB connected successfully.'))
-    .catch(err => console.error('MongoDB connection error:', err));
-}
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log(`MongoDB connected to "${mongoose.connection.name}"`))
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);  // stop if we can’t connect
+  });
+// ────────────────────────────────────────────────────────────────────────────────
 
 // CORS middleware with preflight OPTIONS handling
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*'); // allow all origins
+  res.setHeader('Access-Control-Allow-Origin', '*'); 
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();

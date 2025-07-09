@@ -65,6 +65,7 @@ const notFoundHandler = (req, res, next) => {
  * middleware will catch it and send a JSON response with the error details.
  */
 const errorHandler = (err, req, res, next) => {
+  console.error(err.stack || err);
   res.status(err.status || 500);
   res.json({
     type: 'error',
