@@ -7,8 +7,8 @@ import { TasksService, Task } from '../tasks.service';
   selector: 'app-read-task',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './read-task.component.html',
-  styleUrl: './read-task.component.css'
+  template: '',
+  styles: ''
 })
 export class ReadTaskComponent implements OnInit {
   task: Task | null = null;
