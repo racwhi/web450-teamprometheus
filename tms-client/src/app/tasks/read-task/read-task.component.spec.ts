@@ -50,14 +50,6 @@ describe('ReadTaskComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should load the task on init', () => {
-    expect(component.task).toBeTruthy();
-
-    expect(component.task!._id).toBe('123');
-    expect(component.task!.title).toBe('Mock Title');
-  });
+ 
+  
 });

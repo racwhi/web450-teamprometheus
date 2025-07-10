@@ -46,6 +46,7 @@ template: `
   <a routerLink="/tasks/list" routerLinkActive="active" >List Tasks</a>
   <a routerLink="/tasks/create" routerLinkActive="active" >Create Tasks</a>
   <a routerLink="/tasks/manage" routerLinkActive="active" >Manage Tasks</a>
+  <a routerLink="/tasks/read" routerLinkActive="active" >Read Tasks by ID</a>
  </div>
 </div>
 
