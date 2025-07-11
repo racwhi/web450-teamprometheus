@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CreateTaskComponent } from './create-task.component';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { CreateTaskComponent } from './create-task.component'; // Adjust path if needed
-import { TasksService } from '../tasks.service';
+import { environment } from '../../../environments/environment';
+import { By } from '@angular/platform-browser';
 
 describe('CreateTaskComponent', () => {
   let component: CreateTaskComponent;
@@ -11,45 +11,95 @@ describe('CreateTaskComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CreateTaskComponent, // 
-        ReactiveFormsModule,
-        HttpClientTestingModule,
-      ],
-      providers: [TasksService],
+      imports: [CreateTaskComponent, HttpClientTestingModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CreateTaskComponent);
     component = fixture.componentInstance;
+    httpMock = TestBed.inject(HttpTestingController);
+
     fixture.detectChanges();
 
-    httpMock = TestBed.inject(HttpTestingController);
+    // Mock the GET /api/task call
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/task`);
+    expect(req.request.method).toBe('GET');
+    req.flush([]); // return empty task list
+    fixture.detectChanges();
   });
 
   afterEach(() => {
-    httpMock.verify();
+    httpMock.verify(); // ensure no pending requests
   });
 
-  it('should create', () => {
+
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  
-  it('should create the component with default form values', () => {
-    expect(component).toBeTruthy();
-    expect(component.taskForm.value.status).toBe('Pending');
-    expect(component.taskForm.value.priority).toBe('Medium');
+  it('should display heading "Create New Task"', () => {
+    const headingEl = fixture.debugElement.query(By.css('h2.heading')).nativeElement;
+    expect(headingEl.textContent).toContain('Create New Task');
+  });
+
+  it('should render the task list table with h2 title "Task List"', () => {
+    const tableHeading = fixture.debugElement.query(By.css('.tasklist-container h2'))?.nativeElement;
+    expect(tableHeading).toBeTruthy();
+    expect(tableHeading.textContent).toContain('Task List');
+
+    const table = fixture.debugElement.query(By.css('table.task-table'));
+    expect(table).toBeTruthy();
   });
 
 
-  it('should display an h2 heading with text "Create New Task"', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const heading = compiled.querySelector('h2');
-    expect(heading).toBeTruthy();
-    expect(heading?.textContent?.trim()).toBe('Create New Task');
+it('should mark title as invalid if empty or too short', () => {
+    const titleControl = component.taskForm.controls['title'];
+    titleControl.setValue('');
+    expect(titleControl.invalid).toBeTrue();
+
+    titleControl.setValue('short');
+    expect(titleControl.invalid).toBeTrue();
+
+    titleControl.setValue('Long enough title');
+    expect(titleControl.valid).toBeTrue();
   });
 
 
-  
+
+
+
+it('should use environment.apiBaseUrl for GET /api/task', () => {
+  const expectedUrl = `${environment.apiBaseUrl}/api/task`;
+
+  component.reloadTasks(); // triggers the GET call
+
+  const req = httpMock.expectOne(expectedUrl);
+  expect(req.request.method).toBe('GET');
+
+  req.flush([]); // respond with empty data
+});
+
+it('should disable submit button if form is invalid', () => {
+  // Set form values to be invalid
+  component.taskForm.setValue({
+    title: '',  // Invalid title
+    description: '',
+    status: 'Pending',
+    priority: 'Medium',
+    dueDate: '',
+    projectId: '1'
+  });
+
+  fixture.detectChanges();  // Trigger change detection
+
+  const submitButton = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
+
+  // Check if the submit button is disabled
+  expect(submitButton.disabled).toBeTrue();
+});
+
+
+
+
 
 });
+

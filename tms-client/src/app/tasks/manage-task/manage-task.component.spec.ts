@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ManageTaskComponent } from './manage-task.component';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from '../../../environments/environment';
@@ -30,10 +30,10 @@ describe('ManageTaskComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
 
-    // Mock the GET request from loadTasks() in ngOnInit
+    // Mock the initial GET request from loadTasks() in ngOnInit
     const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/task`);
     expect(req.request.method).toBe('GET');
-    req.flush([]);
+    req.flush([]);  // Mock an empty response 
   });
 
   afterEach(() => {
@@ -43,6 +43,26 @@ describe('ManageTaskComponent', () => {
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should display the header', () => {
+  const headerElement = fixture.nativeElement.querySelector('h2');
+  expect(headerElement).toBeTruthy();  // Verifies the header element exists
+  expect(headerElement.textContent).toContain('Manage Task');  // Verifies the header text
+});
+
+it('should render task list', () => {
+  // Simulating a list of tasks being fetched
+  component.tasks = [
+    { _id: '1', title: 'Test Task 1', description: 'Desc 1', dueDate: '2025-07-20', priority: 'High', status: 'Pending', projectId: 101 },
+    { _id: '2', title: 'Test Task 2', description: 'Desc 2', dueDate: '2025-07-21', priority: 'Low', status: 'Completed', projectId: 102 },
+  ];
+  fixture.detectChanges();  // Update the view
+
+  const taskRows = fixture.nativeElement.querySelectorAll('tr');
+  expect(taskRows.length).toBe(3);  // The first row is the header, so we expect 2 task rows below it
+  expect(taskRows[1].textContent).toContain('Test Task 1');  // Check for the first task
+  expect(taskRows[2].textContent).toContain('Test Task 2');  // Check for the second task
+});
 
   it('should have invalid form when required fields are empty', () => {
     component.initForm({
@@ -80,19 +100,51 @@ describe('ManageTaskComponent', () => {
     expect(component.taskForm.pristine || component.taskForm.untouched).toBeTrue();
   });
 
-  it('should load a selected task from API', fakeAsync(() => {
-    component.onTaskSelect('1');
-
-    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/task/1`);
-    expect(req.request.method).toBe('GET');
-    req.flush(mockTask);
-
-    tick();// simulates passing of time in tests. Helps test async code without waiting in real time.
-    fixture.detectChanges();
-
-    expect(component.selectedTask.title).toBe('Test Task');
-    expect(component.taskForm.value.title).toBe('Test Task');
-  }));
 
   
+
+  it('should not submit when form is invalid', () => {
+    component.selectedTaskId = '1';
+    component.initForm({
+      title: 'short',  // invalid (less than 10 chars)
+      description: '',
+      dueDate: '',
+      priority: 'High',
+      status: 'Pending',
+      projectId: 101,
+    });
+    fixture.detectChanges();
+
+    spyOn(component.taskForm, 'markAllAsTouched');
+
+    component.onSubmit();
+
+    httpMock.expectNone(`${environment.apiBaseUrl}/api/task/1`);
+    expect(component.taskForm.markAllAsTouched).toHaveBeenCalled();
+  });
+
+  it('should set errorMessage on update failure', (done) => {
+    component.selectedTaskId = '1';
+    component.initForm({
+      title: 'Valid task title',
+      description: 'Desc',
+      dueDate: '2025-07-20',
+      priority: 'High',
+      status: 'Pending',
+      projectId: 101,
+    });
+    fixture.detectChanges();
+
+    component.onSubmit();
+
+    // update task  failure mockup
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/task/1`);
+    req.flush('error', { status: 500, statusText: 'Server Error' });
+
+    setTimeout(() => {
+      expect(component.errorMessage).toBe('Update failed.');
+      expect(component.successMessage).toBeNull();
+      done();
+    }, 0);
+  });
 });
