@@ -267,7 +267,7 @@ export class CreateTaskComponent implements OnInit {
         this.loadTasks(); // Load tasks on start
   }
   reloadTasks() {
-    this.http.get(`${environment.apiBaseUrl}/api/task`).subscribe({
+    this.http.get(`${environment.apiBaseUrl}/api/tasks`).subscribe({
       next: (data: any) => {
         this.tasks = data;
       },
@@ -279,7 +279,7 @@ export class CreateTaskComponent implements OnInit {
   
 // Get tasks from server
   loadTasks(): void {
-    this.http.get<any[]>(`${environment.apiBaseUrl}/api/task`).subscribe({
+    this.http.get<any[]>(`${environment.apiBaseUrl}/api/tasks`).subscribe({
       next: (tasks) => this.tasks = tasks,
       error: () => this.errorMessage = 'Could not load tasks.',
     });
@@ -300,7 +300,7 @@ export class CreateTaskComponent implements OnInit {
       projectId: Number(this.taskForm.value.projectId) //convert projectID from string to number
     };
 
- this.http.post(`${environment.apiBaseUrl}/api/task`, newTask).subscribe({     
+ this.http.post(`${environment.apiBaseUrl}/api/tasks`, newTask).subscribe({     
    next: (createdTask) => {
         this.successMessage = `Task "${newTask.title}" created successfully!`;
         this.errorMessage = null;
