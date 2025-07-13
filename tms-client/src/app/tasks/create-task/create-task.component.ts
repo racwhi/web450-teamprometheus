@@ -263,7 +263,8 @@ export class CreateTaskComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-        this.reloadTasks();
+      // this.reloadTasks();
+        this.loadTasks(); // Load tasks on start
   }
   reloadTasks() {
     this.http.get(`${environment.apiBaseUrl}/api/task`).subscribe({
@@ -276,6 +277,16 @@ export class CreateTaskComponent implements OnInit {
     });
   }
   
+// Get tasks from server
+  loadTasks(): void {
+    this.http.get<any[]>(`${environment.apiBaseUrl}/api/task`).subscribe({
+      next: (tasks) => this.tasks = tasks,
+      error: () => this.errorMessage = 'Could not load tasks.',
+    });
+  }
+
+
+
 
   onSubmit() {
     if (this.taskForm.invalid) {
@@ -304,6 +315,9 @@ export class CreateTaskComponent implements OnInit {
         setTimeout(() => {
           this.successMessage = null;
         }, 3000);
+
+           this.loadTasks();
+           this.reloadTasks();
       },
       error: (error: HttpErrorResponse) => {
         this.errorMessage = error.error?.message || 'Failed to create task. Please try again.';
