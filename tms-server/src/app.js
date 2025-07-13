@@ -6,19 +6,11 @@
  */
 
 // require statements
-<<<<<<< HEAD
-const express         = require('express');
-const createError     = require('http-errors');
-const cookieParser    = require('cookie-parser');
-const logger          = require('morgan');
-const mongoose        = require('mongoose');
-=======
 const express = require('express');
 const createError = require('http-errors');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
->>>>>>> test
 const { notFoundHandler, errorHandler } = require('./error-handler');
 
 const indexRouter     = require('./routes/index');
