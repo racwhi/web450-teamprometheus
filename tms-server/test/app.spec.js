@@ -8,6 +8,7 @@
 // Require statements
 const request = require('supertest');
 const express = require('express');
+const mongoose = require('mongoose');
 const app = require('../src/app');
 const { errorHandler } = require('../src/error-handler');
 
@@ -55,4 +56,9 @@ describe('app.js', () => {
       message: 'Not Found'
     }));
   });
+});
+
+// Close Mongoose connection after all tests to allow Jest to exit cleanly
+afterAll(async () => {
+  await mongoose.disconnect();
 });

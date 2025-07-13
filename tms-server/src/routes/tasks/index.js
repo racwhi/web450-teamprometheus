@@ -1,80 +1,94 @@
-const express    = require('express');
-const createError= require('http-errors');
-const mongoose   = require('mongoose');
-const Task       = require('../../models/task');
-
+const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
+const Task = require('../../models/task');
 
-// GET /api/task
+// GET /api/tasks
 router.get('/', async (req, res, next) => {
   try {
     const tasks = await Task.find();
-    res.json(tasks);
+    res.status(200).json(tasks);
   } catch (err) {
     next(err);
   }
 });
 
-// GET /api/task/:id
+// GET /api/tasks/:id
 router.get('/:id', async (req, res, next) => {
   const { id } = req.params;
+
+  // Validate ObjectId
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next(createError(400, 'Invalid Task ID'));
+    const err = new Error('Invalid Task ID');
+    err.status = 400;
+    return next(err);
   }
+
   try {
     const task = await Task.findById(id);
     if (!task) {
-      return next(createError(404, 'Task not found'));
+      const notFound = new Error('Task not found');
+      notFound.status = 404;
+      return next(notFound);
     }
-    res.json(task);
+    res.status(200).json(task);
   } catch (err) {
     next(err);
   }
 });
 
-// POST /api/task
+// POST /api/tasks
 router.post('/', async (req, res, next) => {
   try {
     const task = new Task(req.body);
-    const saved = await task.save();
-    res.status(201).json(saved);
+    const savedTask = await task.save();
+    res.status(201).json(savedTask);
   } catch (err) {
     next(err);
   }
 });
 
-// PUT /api/task/:id
+// PUT /api/tasks/:id
 router.put('/:id', async (req, res, next) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next(createError(400, 'Invalid Task ID'));
+    const err = new Error('Invalid Task ID');
+    err.status = 400;
+    return next(err);
   }
+
   try {
     const updated = await Task.findByIdAndUpdate(id, req.body, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
     if (!updated) {
-      return next(createError(404, 'Task not found'));
+      const notFound = new Error('Task not found');
+      notFound.status = 404;
+      return next(notFound);
     }
-    res.json(updated);
+    res.status(200).json(updated);
   } catch (err) {
     next(err);
   }
 });
 
-// DELETE /api/task/:id
+// DELETE /api/tasks/:id
 router.delete('/:id', async (req, res, next) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next(createError(400, 'Invalid Task ID'));
+    const err = new Error('Invalid Task ID');
+    err.status = 400;
+    return next(err);
   }
   try {
     const deleted = await Task.findByIdAndDelete(id);
     if (!deleted) {
-      return next(createError(404, 'Task not found'));
+      const notFound = new Error('Task not found');
+      notFound.status = 404;
+      return next(notFound);
     }
-    res.json({ message: `Task "${deleted.title}" deleted successfully.` });
+    res.status(200).json({ message: `Task "${deleted.title}" deleted.` });
   } catch (err) {
     next(err);
   }

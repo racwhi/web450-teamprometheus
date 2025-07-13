@@ -6,11 +6,19 @@
  */
 
 // require statements
+<<<<<<< HEAD
 const express         = require('express');
 const createError     = require('http-errors');
 const cookieParser    = require('cookie-parser');
 const logger          = require('morgan');
 const mongoose        = require('mongoose');
+=======
+const express = require('express');
+const createError = require('http-errors');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+>>>>>>> test
 const { notFoundHandler, errorHandler } = require('./error-handler');
 
 const indexRouter     = require('./routes/index');
@@ -32,7 +40,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // CORS middleware with preflight OPTIONS handling
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*'); 
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
@@ -46,8 +54,8 @@ app.use(cookieParser());
 
 // Route definitions
 app.use('/api', indexRouter);
-app.use('/api/task', taskRouter);
-app.use('/api/project', projectRouter);
+app.use('/api/tasks', taskRouter);
+app.use('/api/projects', projectRouter);
 
 // Error handling middleware
 app.use(notFoundHandler);

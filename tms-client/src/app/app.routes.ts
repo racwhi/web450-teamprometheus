@@ -31,8 +31,8 @@ children:[
   {path: 'list', component:ListTasksComponent},
     {path: 'create', component:CreateTaskComponent},
      {path: 'manage', component:ManageTaskComponent},
-     {path: 'read', component:ReadTaskComponent},
-     {path:'', redirectTo:'create',pathMatch: 'full' }//default to create
+    {path: 'read', component:ReadTaskComponent},
+     {path:'', redirectTo:'list',pathMatch: 'full' }//default to create
      
 ]
 },

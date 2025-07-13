@@ -13,8 +13,10 @@ import { TasksService, Task } from '../tasks.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   template: `
+
+  <h2 class="heading">Manage Task</h2>
     <div class="container">
-      <h2 class="heading">Manage Task</h2>
+     
 
       <!-- Success message  -->
       <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
@@ -112,6 +114,39 @@ import { TasksService, Task } from '../tasks.service';
         </button>
       </form>
     </div>
+
+<br />
+<br />
+
+
+<div class = "tasklist-container"> 
+
+<h2 style="text-align:center;">Task List</h2>
+      <table class="task-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Priority</th>
+            <th>Created</th>
+            <th>Project ID</th>
+    
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of tasks">
+            <td>{{task.title}}</td>
+            <td>{{task.description}}</td>
+            <td>{{task.dueDate ? (task.dueDate | date) : 'N/A'}}</td>
+            <td>{{task.priority}}</td>
+            <td>{{task.dateCreated ? (task.dateCreated | date) : 'N/A'}}</td>
+            <td>{{task.projectId}}</td>
+          </tr>
+        </tbody>
+      </table>
+</div>
+
   `,
   styles: [
     `
@@ -119,6 +154,10 @@ import { TasksService, Task } from '../tasks.service';
         max-width: 500px;
         margin: 20px auto;
         font-family: Arial, sans-serif;
+        background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(2,3,5,0.5);
       }
       .heading {
         text-align: center;
@@ -171,163 +210,186 @@ import { TasksService, Task } from '../tasks.service';
         border-radius: 4px;
         text-align: center;
       }
+       .task-table {
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+      border-collapse: collapse;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+    }
+
+    .task-table thead {
+      background-color: #3f51b5; 
+      color: #fff;
+    }
+
+    .task-table th {
+      padding: 12px 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .task-table tbody tr {
+      border-bottom: 1px solid #dee2e6;
+      transition: background-color 0.2s;
+    }
+
+    .task-table tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .task-table td {
+      padding: 12px 15px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .task-table tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    button {
+      margin-right: 8px;
+      padding: 5px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
     `,
   ],
 })
 export class ManageTaskComponent implements OnInit {
-  // List of all tasks loaded from backend
-  tasks: any[] = [];
+  tasks: any[] = [];               // All tasks
+  selectedTaskId = '';             // Currently selected task ID
+  selectedTask: any = null;        // Selected task details
+  taskForm!: FormGroup;            // Form for editing task
 
-  // Selected task id from dropdown
-  selectedTaskId: string = '';
-
-  // Selected task object loaded from backend
-  selectedTask: any = null;
-
-  // Reactive form group for editing task details
-  taskForm!: FormGroup;
-
-  // Success and error message strings for user interface feedback
+  //tasks: Task[] = [];
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
-  //Output events for parent components
   @Output() taskUpdated = new EventEmitter<any>();
   @Output() taskDeleted = new EventEmitter<string>();
 
-  // Inject FormBuilder and HttpClient services
   constructor(private fb: FormBuilder, private http: HttpClient) {}
 
   ngOnInit(): void {
-    // Load all tasks on component init
-    this.loadTasks();
+    this.loadTasks(); // Load tasks on start
   }
 
-  // Load all tasks from API
+  reloadTasks() {
+    this.http.get(`${environment.apiBaseUrl}/api/task`).subscribe({
+      next: (data: any) => {
+        this.tasks = data;
+      },
+      error: (err: any) => {
+        console.error('Error fetching tasks:', err);
+      }
+    });
+  }
+  
+
+  // Get tasks from server
   loadTasks(): void {
     this.http.get<any[]>(`${environment.apiBaseUrl}/api/task`).subscribe({
-      next: (tasks) => (this.tasks = tasks),
-      error: () => (this.errorMessage = 'Failed to load tasks.'),
+      next: (tasks) => this.tasks = tasks,
+      error: () => this.errorMessage = 'Could not load tasks.',
     });
   }
 
-  // Called when a task is selected from dropdown
+  // When a task is picked
   onTaskSelect(id: string): void {
     this.selectedTaskId = id;
 
-    // If no selection, clear form and task
     if (!id) {
       this.selectedTask = null;
       this.taskForm.reset();
       return;
     }
 
-    // Fetch task details by id
     this.http.get<any>(`${environment.apiBaseUrl}/api/task/${id}`).subscribe({
       next: (task) => {
         this.selectedTask = task;
-        // Initialize reactive form with task data
         this.initForm(task);
         this.errorMessage = null;
       },
       error: () => {
-        this.errorMessage = 'Failed to load selected task.';
+        this.errorMessage = 'Could not load task.';
         this.selectedTask = null;
       },
     });
   }
 
-  // Initialize reactive form with validation and current task values
+  // Set up form with task values
   initForm(task: any): void {
     this.taskForm = this.fb.group({
       title: [task.title, [Validators.required, Validators.minLength(10)]],
       description: [task.description || ''],
-      dueDate: [task.dueDate ? task.dueDate.substring(0, 10) : ''], 
+      dueDate: [task.dueDate?.substring(0, 10) || ''],
       priority: [task.priority || 'Medium', Validators.required],
       status: [task.status || 'Pending', Validators.required],
       projectId: [
         task.projectId ?? '',
-        [Validators.required, Validators.pattern(/^\d+$/)], // digits only pattern validation
+        [Validators.required, Validators.pattern(/^\d+$/)],
       ],
     });
   }
 
-  // Form submit  for updating task
+  // Save changes
   onSubmit(): void {
-    // Validate form and task selected
     if (!this.taskForm.valid || !this.selectedTaskId) {
       this.taskForm.markAllAsTouched();
       return;
     }
 
-    // Convert projectId string to number explicitly
     const updatedTask = {
-      ...this.taskForm.value,// Copy all properties from the form
-      projectId: Number(this.taskForm.value.projectId) //convert projectID from string to number
+      ...this.taskForm.value,
+      projectId: Number(this.taskForm.value.projectId),
     };
 
-    // Call API to update task
-    this.http
-      .put(`${environment.apiBaseUrl}/api/task/${this.selectedTaskId}`, updatedTask)
-      .subscribe({
-        next: () => {
-          // Show success message
-          this.successMessage = `Task "${updatedTask.title}" updated successfully.`;
-          this.errorMessage = null;
+    this.http.put(`${environment.apiBaseUrl}/api/task/${this.selectedTaskId}`, updatedTask).subscribe({
+      next: () => {
+        this.successMessage = `Task "${updatedTask.title}" updated.`;
+        this.errorMessage = null;
+        this.taskUpdated.emit(updatedTask);
 
-          // Emit event to parent if needed
-          this.taskUpdated.emit(updatedTask);
+        setTimeout(() => this.successMessage = null, 3000);
 
-          // Clear success message after 3 seconds
-          setTimeout(() => (this.successMessage = null), 3000);
-
-          // Refresh the task list to show updates
-          this.loadTasks();
-
-
-           // Clear form and selected task after update
+        this.loadTasks();
         this.taskForm.reset();
         this.selectedTask = null;
         this.selectedTaskId = '';
-        },
-        error: () => {
-          this.errorMessage = 'Failed to update task.';
-          this.successMessage = null;
-        },
-      });
+      },
+      error: () => {
+        this.errorMessage = 'Update failed.';
+        this.successMessage = null;
+      },
+    });
   }
 
-   
-  // Delete selected task after confirmation
+  // Delete selected task
   deleteTask(): void {
     if (!this.selectedTaskId) return;
 
-    const confirmed = confirm(
-      `Are you sure you want to delete "${this.selectedTask?.title}"?`
-    );
+    const confirmed = confirm(`Delete "${this.selectedTask?.title}"?`);
     if (!confirmed) return;
 
     this.http.delete(`${environment.apiBaseUrl}/api/task/${this.selectedTaskId}`).subscribe({
       next: () => {
-        this.successMessage = `Task "${this.selectedTask?.title}" deleted successfully.`;
+        this.successMessage = `Task "${this.selectedTask?.title}" deleted.`;
         this.errorMessage = null;
-
-        // Emit event to parent if needed
         this.taskDeleted.emit(this.selectedTaskId);
 
-        // Clear form and selection
         this.selectedTask = null;
         this.selectedTaskId = '';
         this.taskForm.reset();
 
-        // Clear success message after 3 seconds
-        setTimeout(() => (this.successMessage = null), 3000);
-
-        // Reload updated task list
+        setTimeout(() => this.successMessage = null, 3000);
         this.loadTasks();
       },
       error: () => {
-        this.errorMessage = 'Failed to delete task.';
+        this.errorMessage = 'Delete failed.';
         this.successMessage = null;
       },
     });

@@ -4,13 +4,15 @@ import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { TasksService, Task } from '../tasks.service';
+
 
 @Component({
   selector: 'app-create-task',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   template: `
-   <div class="container">
+   <div class="create-container">
       <h2 class="heading">Create New Task</h2>
 
       <!-- Success message -->
@@ -87,10 +89,46 @@ import { environment } from '../../../environments/environment';
         <button class="button" type="submit" [disabled]="taskForm.invalid">Save Task</button>
       </form>
     </div>
+
+
+  <br />
+  <br />
+
+<div class = "tasklist-container"> 
+
+<h2 style="text-align:center;">Task List</h2>
+      <table class="task-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Priority</th>
+            <th>Created</th>
+            <th>Project ID</th>
+    
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of tasks">
+            <td>{{task.title}}</td>
+            <td>{{task.description}}</td>
+            <td>{{task.dueDate ? (task.dueDate | date) : 'N/A'}}</td>
+            <td>{{task.priority}}</td>
+            <td>{{task.dateCreated ? (task.dateCreated | date) : 'N/A'}}</td>
+            <td>{{task.projectId}}</td>
+          </tr>
+        </tbody>
+      </table>
+</div>
+
+
+
+
   `,
   styles: [
     `
-    .container {
+    .create-container {
       max-width: 500px;
       margin: 20px auto;
       font-family: Arial, sans-serif;
@@ -150,6 +188,53 @@ import { environment } from '../../../environments/environment';
       border-radius: 4px;
       text-align: center;
     }
+
+     .task-table {
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+      border-collapse: collapse;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+    }
+
+    .task-table thead {
+      background-color: #3f51b5; 
+      color: #fff;
+    }
+
+    .task-table th {
+      padding: 12px 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .task-table tbody tr {
+      border-bottom: 1px solid #dee2e6;
+      transition: background-color 0.2s;
+    }
+
+    .task-table tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .task-table td {
+      padding: 12px 15px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .task-table tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    button {
+      margin-right: 8px;
+      padding: 5px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
     `
   ]
 })
@@ -164,10 +249,12 @@ export class CreateTaskComponent implements OnInit {
     projectId: ['', [Validators.required, Validators.pattern(/^\d+$/)]]
   });
 
+   tasks: Task[] = [];
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
   @Output() taskCreated = new EventEmitter<any>();
+  tasksService: any;
 
   constructor(
     private fb: FormBuilder,
@@ -175,7 +262,31 @@ export class CreateTaskComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+      // this.reloadTasks();
+        this.loadTasks(); // Load tasks on start
+  }
+  reloadTasks() {
+    this.http.get(`${environment.apiBaseUrl}/api/tasks`).subscribe({
+      next: (data: any) => {
+        this.tasks = data;
+      },
+      error: (err: any) => {
+        console.error('Error fetching tasks:', err);
+      }
+    });
+  }
+  
+// Get tasks from server
+  loadTasks(): void {
+    this.http.get<any[]>(`${environment.apiBaseUrl}/api/tasks`).subscribe({
+      next: (tasks) => this.tasks = tasks,
+      error: () => this.errorMessage = 'Could not load tasks.',
+    });
+  }
+
+
+
 
   onSubmit() {
     if (this.taskForm.invalid) {
@@ -189,7 +300,7 @@ export class CreateTaskComponent implements OnInit {
       projectId: Number(this.taskForm.value.projectId) //convert projectID from string to number
     };
 
- this.http.post(`${environment.apiBaseUrl}/api/task`, newTask).subscribe({     
+ this.http.post(`${environment.apiBaseUrl}/api/tasks`, newTask).subscribe({     
    next: (createdTask) => {
         this.successMessage = `Task "${newTask.title}" created successfully!`;
         this.errorMessage = null;
@@ -204,6 +315,9 @@ export class CreateTaskComponent implements OnInit {
         setTimeout(() => {
           this.successMessage = null;
         }, 3000);
+
+           this.loadTasks();
+           this.reloadTasks();
       },
       error: (error: HttpErrorResponse) => {
         this.errorMessage = error.error?.message || 'Failed to create task. Please try again.';
