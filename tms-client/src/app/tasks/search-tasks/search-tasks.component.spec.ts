@@ -41,7 +41,7 @@ describe('SearchTasksComponent', () => {
 
     // Simulate user typing input
     const input = fixture.debugElement.query(By.css('input')).nativeElement;
-    input.value = 'Update homepage color to Blue';
+    input.value = 'Task1';
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
@@ -49,7 +49,8 @@ describe('SearchTasksComponent', () => {
     const button = fixture.debugElement.query(By.css('button')).nativeElement;
     button.click();
 
-    expect(service.searchTasks).toHaveBeenCalledWith({ q: 'Update homepage color to Blue' });
+    expect(service.searchTasks).toHaveBeenCalledWith({ q: 'Task1' });
+  });
 
   it('should display no list items when service returns an empty array', () => {
     spyOn(service, 'searchTasks').and.returnValue(of([]));
@@ -79,4 +80,4 @@ describe('SearchTasksComponent', () => {
     expect(items[1].nativeElement.textContent).toContain('Task B');
   });
 });
-});
+

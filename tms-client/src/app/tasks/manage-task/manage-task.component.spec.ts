@@ -31,7 +31,7 @@ describe('ManageTaskComponent', () => {
     fixture.detectChanges();
 
     // Mock the initial GET request from loadTasks() in ngOnInit
-    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/task`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/tasks`);
     expect(req.request.method).toBe('GET');
     req.flush([]);  // Mock an empty response 
   });
@@ -119,7 +119,7 @@ it('should render task list', () => {
 
     component.onSubmit();
 
-    httpMock.expectNone(`${environment.apiBaseUrl}/api/task/1`);
+    httpMock.expectNone(`${environment.apiBaseUrl}/api/tasks/1`);
     expect(component.taskForm.markAllAsTouched).toHaveBeenCalled();
   });
 
@@ -138,7 +138,7 @@ it('should render task list', () => {
     component.onSubmit();
 
     // update task  failure mockup
-    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/task/1`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/tasks/1`);
     req.flush('error', { status: 500, statusText: 'Server Error' });
 
     setTimeout(() => {

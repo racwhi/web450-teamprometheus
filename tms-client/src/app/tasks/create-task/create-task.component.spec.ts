@@ -21,7 +21,7 @@ describe('CreateTaskComponent', () => {
     fixture.detectChanges();
 
     // Mock the GET /api/task call
-    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/task`);
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/tasks`);
     expect(req.request.method).toBe('GET');
     req.flush([]); // return empty task list
     fixture.detectChanges();
@@ -67,8 +67,8 @@ it('should mark title as invalid if empty or too short', () => {
 
 
 
-it('should use environment.apiBaseUrl for GET /api/task', () => {
-  const expectedUrl = `${environment.apiBaseUrl}/api/task`;
+it('should use environment.apiBaseUrl for GET /api/tasks', () => {
+  const expectedUrl = `${environment.apiBaseUrl}/api/tasks`;
 
   component.reloadTasks(); // triggers the GET call
 

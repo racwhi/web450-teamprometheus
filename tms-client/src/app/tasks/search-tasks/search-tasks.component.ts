@@ -1,3 +1,4 @@
+// src/app/tasks/search-tasks/search-tasks.component.ts
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -12,32 +13,33 @@ import { TasksService, Task } from '../tasks.service';
     <div class="search-container">
       <h2>Search Tasks</h2>
 
-      <div class="search-box">
+      <!-- Wrap filters and inputs in a form for (ngSubmit) -->
+      <form class="search-box" (ngSubmit)="onSearch()">
         <div class="filters">
+          <input
+          class="search-input"
+          type="text"
+          [(ngModel)]="query"
+          name="query"
+          placeholder="Enter keyword or 24‑char ID…"
+        />
+        <button type="submit" class="search-button" (click)="onSearch()">Search</button>
           <div class="filter-item">
             <label for="due">Due by:</label>
-            <input id="due" type="date" [(ngModel)]="dueDateFilter" class="filter-input" />
+            <input id="due" name="dueDate" type="date" [(ngModel)]="dueDateFilter" class="filter-input" />
           </div>
 
           <div class="filter-item">
             <label for="priority">Priority:</label>
-            <select id="priority" [(ngModel)]="priorityFilter" class="filter-input">
+            <select id="priority" name="priority" [(ngModel)]="priorityFilter" class="filter-input">
               <option value="">Any</option>
               <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
             </select>
           </div>
         </div>
 
-        <input
-          class="search-input"
-          type="text"
-          [(ngModel)]="query"
-          (keyup.enter)="onSearch()"
-          placeholder="Enter keyword or ID…"
-        />
-
-        <button class="search-button" (click)="onSearch()">Submit</button>
-      </div>
+        
+      </form>
 
       <div *ngIf="error" class="error">{{ error }}</div>
       <div *ngIf="loading" class="loading">Searching…</div>
@@ -82,11 +84,10 @@ import { TasksService, Task } from '../tasks.service';
       color: #333;
     }
 
-    .search-box {
+    form.search-box {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      align-content: center;
       gap: 0.75rem;
       background: #fff;
       border: 1px solid #e0e0e0;
@@ -108,9 +109,7 @@ import { TasksService, Task } from '../tasks.service';
       flex-shrink: 0;
     }
 
-    .filter-input,
-    .search-input,
-    .search-button {
+    .filter-input, .search-input, .search-button {
       height: 2.5rem;
       box-sizing: border-box;
       flex-shrink: 0;
@@ -257,9 +256,7 @@ export class SearchTasksComponent {
       filters.q = this.query.trim();
     }
     if (this.dueDateFilter) {
-      filters.dueDate = new Date(this.dueDateFilter)
-                           .toISOString()
-                           .split('T')[0];
+      filters.dueDate = new Date(this.dueDateFilter).toISOString().split('T')[0];
     }
     if (this.priorityFilter) {
       filters.priority = this.priorityFilter;
@@ -271,7 +268,6 @@ export class SearchTasksComponent {
       return;
     }
 
-    // ObjectID shortcut
     if (
       Object.keys(filters).length === 1 &&
       filters.q &&
@@ -293,7 +289,6 @@ export class SearchTasksComponent {
       return;
     }
 
-    // regular search
     this.tasksService.searchTasks(filters).subscribe({
       next: list => {
         this.results = list;
