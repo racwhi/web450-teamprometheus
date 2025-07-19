@@ -47,4 +47,9 @@ export class TasksService {
   deleteTask(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  // Search tasks with optional filters
+  searchTasks(filters: { q?: string; dueDate?: string; priority?: string }) {
+    return this.http.get<Task[]>(this.apiUrl, { params: filters });
+  }
 }

@@ -1,60 +1,89 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { HttpClientModule } from '@angular/common/http';
 import { TasksService, Task } from '../tasks.service';
-
 
 @Component({
   selector: 'app-list-tasks',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HttpClientModule],
   template: `
-    <div class="tasks-container">
-     
-      <div *ngIf="tasks.length === 0">No tasks available.</div>
-      <div class="task-card" *ngFor="let task of tasks">
-        <h3>{{ task.title }}</h3>
-        <p><strong>Status:</strong> {{ task.status }}</p>
-        <p><strong>Priority:</strong> {{ task.priority }}</p>
-        <p><strong>Due Date:</strong> {{ task.dueDate | date }}</p>
-      </div>
+    <div class="list-container">
+      <h2>All Tasks</h2>
+      <div *ngIf="error" class="error">{{ error }}</div>
+      <ng-container *ngIf="tasks.length; else noTasks">
+        <table class="task-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Due Date</th>
+              <th>Project ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of tasks">
+              <td>{{ t.title }}</td>
+              <td>{{ t.description || 'N/A' }}</td>
+              <td>{{ t.status }}</td>
+              <td>{{ t.priority }}</td>
+              <td>{{ t.dueDate ? (t.dueDate | date:'mediumDate') : 'N/A' }}</td>
+              <td>{{ t.projectId }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+      <ng-template #noTasks>
+        <p>No tasks available.</p>
+      </ng-template>
     </div>
   `,
-  styles: `
-    .tasks-container {
-      padding: 20px;
+  styles: [
+    `
+    .list-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      font-family: Arial, sans-serif;
     }
-    .task-card {
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .error {
+      color: #e74c3c;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .task-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .task-table th, .task-table td {
+      padding: 0.75rem;
+      border: 1px solid #ddd;
       text-align: left;
     }
-    .task-card h3 {
-      margin: 0 0 8px 0;
-      color: #333;
+    .task-table thead {
+      background-color: #3f51b5;
+      color: white;
     }
-    .task-card p {
-      margin: 4px 0;
-      font-size: 14px;
-      color: #555;
-    }
-  `
+    `
+  ]
 })
 export class ListTasksComponent implements OnInit {
   tasks: Task[] = [];
+  error = '';
 
-  constructor(private tasksService: TasksService) { }
+  constructor(private tasksService: TasksService) {}
 
   ngOnInit(): void {
     this.tasksService.getTasks().subscribe({
-      next: (data) => {
-        this.tasks = data;
-      },
-      error: (err) => {
+      next: (data: Task[]) => this.tasks = data,
+      error: (err: any) => {
         console.error('Error fetching tasks:', err);
+        this.error = 'Failed to load task list';
       }
     });
   }

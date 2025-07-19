@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-import { Component, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { TasksService, Task } from "../tasks.service";
-import { FormsModule } from "@angular/forms";
-=======
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { TasksService, Task } from '../tasks.service';
->>>>>>> test
 
 @Component({
   selector: 'app-read-task',
@@ -71,41 +64,14 @@ import { TasksService, Task } from '../tasks.service';
 })
 export class ReadTaskComponent implements OnInit {
   tasks: Task[] = [];
-<<<<<<< HEAD
-  task: Task | null = null;
-  selectedTaskId = '';
-=======
   selectedId = '';
   task: Task | null = null;
->>>>>>> test
   error = '';
 
   constructor(private tasksService: TasksService) {}
 
   ngOnInit(): void {
     this.tasksService.getTasks().subscribe({
-<<<<<<< HEAD
-      next: data => this.tasks = data,
-      error: err => this.error = 'Failed to load tasks list'
-    });
-  }
-
-  onTaskSelected(taskId: string): void {
-    if (taskId) {
-      this.tasksService.getTaskById(taskId).subscribe({
-        next: data => {
-          this.task = data;
-          this.error = '';
-        },
-        error: err => {
-          this.error = 'Failed to load task details';
-          this.task = null;
-        }
-      });
-    }
-  }
-}
-=======
       next: list => this.tasks = list,
       error: () => this.error = 'Failed to load task list'
     });
@@ -123,4 +89,3 @@ export class ReadTaskComponent implements OnInit {
     });
   }
 }
->>>>>>> test
