@@ -1,12 +1,40 @@
-const express = require('express');
-const router = express.Router();
+const express  = require('express');
+const router   = express.Router();
 const mongoose = require('mongoose');
-const Task = require('../../models/task');
+const Task     = require('../../models/task');
 
 // GET /api/tasks
 router.get('/', async (req, res, next) => {
+  console.log('🛎  HIT /api/tasks →', req.query);
+
   try {
-    const tasks = await Task.find();
+    const { dueDate, q, priority } = req.query;
+    const filters = {};
+
+    // text search
+    if (q) {
+      filters.$or = [
+        { title:       new RegExp(q, 'i') },
+        { description: new RegExp(q, 'i') }
+      ];
+    }
+
+    // priority filter
+    if (priority) {
+      filters.priority = priority;
+    }
+
+    // due date filter
+    if (dueDate) {
+      const [y, m, d] = dueDate.split('-').map(Number);
+      const end = new Date(y, m - 1, d + 1, 0, 0, 0);
+      console.log(`→ including tasks due before ${end.toISOString()}`);
+      filters.dueDate = { $lt: end };
+    }
+
+   
+    const tasks = await Task.find(filters);
+    
     res.status(200).json(tasks);
   } catch (err) {
     next(err);
@@ -16,8 +44,6 @@ router.get('/', async (req, res, next) => {
 // GET /api/tasks/:id
 router.get('/:id', async (req, res, next) => {
   const { id } = req.params;
-
-  // Validate ObjectId
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('Invalid Task ID');
     err.status = 400;
@@ -81,6 +107,7 @@ router.delete('/:id', async (req, res, next) => {
     err.status = 400;
     return next(err);
   }
+
   try {
     const deleted = await Task.findByIdAndDelete(id);
     if (!deleted) {

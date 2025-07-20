@@ -12,15 +12,16 @@ dateModified:{ type: Date}
 });
 
 
-/*projectSchema.pre('save', function(next){ 
-    if (!this.isNew) {
-this.dateModified = new Date(); 
-}
-next(); 
-})*/
 
 module.exports = {
 Project: mongoose.model('Project', projectSchema)
 }
 
 
+
+/*projectSchema.pre('save', function(next){ 
+    if (!this.isNew) {
+this.dateModified = new Date(); 
+}
+next(); 
+})*/

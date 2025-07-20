@@ -2,9 +2,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Task {
-  //id: any;
   _id: string;
   title: string;
   description: string;
@@ -20,10 +20,11 @@ export interface Task {
   providedIn: 'root'
 })
 export class TasksService {
-  private apiUrl = 'http://localhost:3000/api/tasks';
+  private apiUrl = `http://localhost:3000/api/tasks`;
 
   constructor(private http: HttpClient) { }
-// Create a new task
+
+  // Create a new task
   createTask(task: Task): Observable<Task> {
     return this.http.post<Task>(this.apiUrl, task);
   }
@@ -46,5 +47,10 @@ export class TasksService {
   // Delete a task
   deleteTask(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // Search tasks with optional filters
+  searchTasks(filters: { q?: string; dueDate?: string; priority?: string }): Observable<Task[]> {
+    return this.http.get<Task[]>(this.apiUrl, { params: filters });
   }
 }

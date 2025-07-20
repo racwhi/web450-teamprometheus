@@ -25,15 +25,16 @@ template: `
 <!-- routerLinkActiveOptions with exact: true , means the active class is only applied when the URL matatches the link  
  Applied on side navigation for the active page-->
 <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
-<a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
+<!--<a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>-->
 
 
 <div>
 <a (click)="toggleProjectsMenu()" style="cursor:pointer;" routerLink="/projects" routerLinkActive="active" >Projects</a>
 <!-- Sub navigation for Projects -->
  <div class="sub-menu" *ngIf="isProjectsMenuOpen">
+  <a routerLink="/projects/list" routerLinkActive="active" >List Projects</a>
   <a routerLink="/projects/create" routerLinkActive="active" >Create Projects</a>
-  <a routerLink="/projects/manage" routerLinkActive="active" >Manage Projects</a>
+<!--  <a routerLink="/projects/manage" routerLinkActive="active" >Manage Projects</a>-->
  </div>
 </div>
 
@@ -47,6 +48,7 @@ template: `
   <a routerLink="/tasks/create" routerLinkActive="active" >Create Tasks</a>
   <a routerLink="/tasks/manage" routerLinkActive="active" >Manage Tasks</a>
   <a routerLink="/tasks/read" routerLinkActive="active" >Read Tasks by ID</a>
+  <a routerLink="/tasks/search" routerLinkActive="active" >Search Tasks</a>
  </div>
 </div>
 
@@ -113,6 +115,7 @@ styles: `
   margin-bottom: 10px;
   text-decoration: none;
   color: #333;
+  font-size: 25px;
 } 
 .sidebar a:hover{ 
   background-color: #3f51b5;

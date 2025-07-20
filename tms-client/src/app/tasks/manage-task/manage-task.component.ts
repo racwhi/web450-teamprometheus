@@ -279,7 +279,7 @@ export class ManageTaskComponent implements OnInit {
   }
 
   reloadTasks() {
-    this.http.get(`${environment.apiBaseUrl}/api/task`).subscribe({
+    this.http.get(`${environment.apiBaseUrl}/api/tasks`).subscribe({
       next: (data: any) => {
         this.tasks = data;
       },
@@ -292,7 +292,7 @@ export class ManageTaskComponent implements OnInit {
 
   // Get tasks from server
   loadTasks(): void {
-    this.http.get<any[]>(`${environment.apiBaseUrl}/api/task`).subscribe({
+    this.http.get<any[]>(`${environment.apiBaseUrl}/api/tasks`).subscribe({
       next: (tasks) => this.tasks = tasks,
       error: () => this.errorMessage = 'Could not load tasks.',
     });
@@ -308,7 +308,7 @@ export class ManageTaskComponent implements OnInit {
       return;
     }
 
-    this.http.get<any>(`${environment.apiBaseUrl}/api/task/${id}`).subscribe({
+    this.http.get<any>(`${environment.apiBaseUrl}/api/tasks/${id}`).subscribe({
       next: (task) => {
         this.selectedTask = task;
         this.initForm(task);
@@ -348,7 +348,7 @@ export class ManageTaskComponent implements OnInit {
       projectId: Number(this.taskForm.value.projectId),
     };
 
-    this.http.put(`${environment.apiBaseUrl}/api/task/${this.selectedTaskId}`, updatedTask).subscribe({
+    this.http.put(`${environment.apiBaseUrl}/api/tasks/${this.selectedTaskId}`, updatedTask).subscribe({
       next: () => {
         this.successMessage = `Task "${updatedTask.title}" updated.`;
         this.errorMessage = null;
@@ -375,7 +375,7 @@ export class ManageTaskComponent implements OnInit {
     const confirmed = confirm(`Delete "${this.selectedTask?.title}"?`);
     if (!confirmed) return;
 
-    this.http.delete(`${environment.apiBaseUrl}/api/task/${this.selectedTaskId}`).subscribe({
+    this.http.delete(`${environment.apiBaseUrl}/api/tasks/${this.selectedTaskId}`).subscribe({
       next: () => {
         this.successMessage = `Task "${this.selectedTask?.title}" deleted.`;
         this.errorMessage = null;
