@@ -74,6 +74,20 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+// PATCH: update one task (e.g. to set projectId)
+router.patch('/:id', async (req, res) => {
+  try {
+    const updates = req.body;               
+    const opts    = { new: true };          
+    const task    = await Task.findByIdAndUpdate(req.params.id, updates, opts);
+    if (!task) return res.status(404).json({ message: 'Task not found' });
+    return res.status(200).json(task);
+  } catch (err) {
+    console.error('Could not update task:', err);
+    return res.status(400).json({ message: err.message });
+  }
+});
+
 // PUT /api/tasks/:id
 router.put('/:id', async (req, res, next) => {
   const { id } = req.params;
