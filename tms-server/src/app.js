@@ -11,6 +11,7 @@ const createError = require('http-errors');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
+const path = require('path');
 const { notFoundHandler, errorHandler } = require('./error-handler');
 
 const indexRouter     = require('./routes/index');
@@ -49,18 +50,16 @@ app.use('/api', indexRouter);
 app.use('/api/tasks', taskRouter);
 app.use('/api/projects', projectRouter);
 
+// Serve Angular static files (Angular 17+ puts build in "browser" subfolder)
+app.use(express.static(path.join(__dirname, '../../tms-client/dist/tms-client/browser')));
+
+// Fallback to Angular's index.html for unknown frontend routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../tms-client/dist/tms-client/browser/index.html'));
+});
+
 // Error handling middleware
 app.use(notFoundHandler);
 app.use(errorHandler);
-
-const path = require('path');
-
-// Serve Angular static files
-app.use(express.static(path.join(__dirname, '../../tms-client/dist/tms-client')));
-
-// Fallback to Angular's index.html for unknown routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../tms-client/dist/tms-client/index.html'));
-});
 
 module.exports = app;
