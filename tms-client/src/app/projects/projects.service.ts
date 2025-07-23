@@ -1,3 +1,4 @@
+// tms-client/src/app/projects/projects.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -17,8 +18,7 @@ export interface Project {
   providedIn: 'root'
 })
 export class ProjectsService {
-  private apiUrl = 'http://localhost:3000/api/projects'; 
-
+  private apiUrl = '/api/projects';
   constructor(private http: HttpClient) {}
 
   getProjects(): Observable<Project[]> {
