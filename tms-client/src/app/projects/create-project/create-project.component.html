@@ -1,0 +1,70 @@
+<div class="mode-switch">
+  <button type="button" [class.active]="mode==='create'" (click)="setMode('create')">Create Project</button>
+  <button type="button" [class.active]="mode==='addExisting'" (click)="setMode('addExisting')">Add Existing
+    Task</button>
+  <button type="button" [class.active]="mode==='addNew'" (click)="setMode('addNew')">Add New Task</button>
+</div>
+
+<!-- CREATE PROJECT FORM -->
+<section *ngIf="mode==='create'" class="panel project-form">
+  <h2>Create New Project</h2>
+  <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+    <label>Project ID<input formControlName="projectId" type="number" /></label>
+    <label>Name<input formControlName="name" type="text" /></label>
+    <label>Description<textarea formControlName="description"></textarea></label>
+    <label>Start Date<input formControlName="startDate" type="date" /></label>
+    <label>End Date<input formControlName="endDate" type="date" /></label>
+    <button type="submit" [disabled]="projectForm.invalid">Create Project</button>
+  </form>
+
+  <div *ngIf="attachedTasks.length" class="attached-tasks">
+    <h3>Attached Tasks</h3>
+    <ul>
+      <li *ngFor="let task of attachedTasks">{{ task.title }}</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ADD EXISTING TASK -->
+<section *ngIf="mode==='addExisting'" class="panel existing-task">
+  <h2>Add Existing Task</h2>
+  <ul>
+    <li *ngFor="let t of allTasks">
+      {{ t.title }}
+      <button type="button" (click)="attachExistingTask(t)">Attach</button>
+    </li>
+  </ul>
+</section>
+
+<!-- ADD NEW TASK (matches create-task API) -->
+<section *ngIf="mode==='addNew'" class="panel new-task-form">
+  <h2>Add New Task</h2>
+  <form [formGroup]="newTaskForm" (ngSubmit)="createAndAttachNewTask()">
+    <label>Title<input formControlName="title" /></label>
+    <label>Description<textarea formControlName="description"></textarea></label>
+    <label>Status
+      <select formControlName="status">
+        <option value="Pending">Pending</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+      </select>
+    </label>
+    <label>Priority
+      <select formControlName="priority">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+    </label>
+    <label>Due Date<input formControlName="dueDate" type="date" /></label>
+    <button type="button" [disabled]="newTaskForm.invalid || projectForm.get('projectId')?.invalid"
+      (click)="createAndAttachNewTask()">
+      Create & Attach
+    </button>
+  </form>
+</section>
+
+<div class="feedback">
+  <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+</div>

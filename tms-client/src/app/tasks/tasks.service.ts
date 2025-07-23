@@ -1,4 +1,4 @@
-//tasks.service.ts
+// tms-client/src/app/tasks/tasks.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -20,7 +20,7 @@ export interface Task {
   providedIn: 'root'
 })
 export class TasksService {
-  private apiUrl = `http://localhost:3000/api/tasks`;
+  private apiUrl = `/api/tasks`;
 
   constructor(private http: HttpClient) { }
 

@@ -1,5 +1,7 @@
+// tms-client/src/environments/environment.ts
+
 // Export the environment object
 export const environment = {
   production: true,
-  apiBaseUrl: 'http://localhost:3000/api'
+  apiBaseUrl: '/api'
 };

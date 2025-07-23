@@ -44,6 +44,7 @@ children:[
     {path: 'list', component:ListProjectsComponent},
     {path: 'create', component:CreateProjectComponent},
      {path: 'manage', component:ManageProjectComponent},
+     { path: 'projects/create', component: CreateProjectComponent },
      {path:'', redirectTo:'list',pathMatch: 'full' }//default to list
 ]
 }
