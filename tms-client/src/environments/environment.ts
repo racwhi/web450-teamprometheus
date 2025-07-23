@@ -3,5 +3,5 @@
 // Export the environment object
 export const environment = {
   production: true,
-  apiBaseUrl: '/api'
+  apiBaseUrl: ''
 };
