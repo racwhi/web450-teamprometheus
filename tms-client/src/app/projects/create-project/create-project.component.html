@@ -1,29 +1,49 @@
-<div class="mode-switch">
-  <button type="button" [class.active]="mode==='create'" (click)="setMode('create')">Create Project</button>
-  <button type="button" [class.active]="mode==='addExisting'" (click)="setMode('addExisting')">Add Existing
-    Task</button>
-  <button type="button" [class.active]="mode==='addNew'" (click)="setMode('addNew')">Add New Task</button>
-</div>
-
-<!-- CREATE PROJECT FORM -->
-<section *ngIf="mode==='create'" class="panel project-form">
-  <h2>Create New Project</h2>
-  <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
-    <label>Project ID<input formControlName="projectId" type="number" /></label>
-    <label>Name<input formControlName="name" type="text" /></label>
-    <label>Description<textarea formControlName="description"></textarea></label>
-    <label>Start Date<input formControlName="startDate" type="date" /></label>
-    <label>End Date<input formControlName="endDate" type="date" /></label>
-    <button type="submit" [disabled]="projectForm.invalid">Create Project</button>
-  </form>
-
-  <div *ngIf="attachedTasks.length" class="attached-tasks">
-    <h3>Attached Tasks</h3>
-    <ul>
-      <li *ngFor="let task of attachedTasks">{{ task.title }}</li>
-    </ul>
+<div class="create-container">
+  <div class="mode-switch">
+    <button type="button" [class.active]="mode==='create'" (click)="setMode('create')">Create Project</button>
+    <button type="button" [class.active]="mode==='addExisting'" (click)="setMode('addExisting')">Add Existing Task</button>
+    <button type="button" [class.active]="mode==='addNew'" (click)="setMode('addNew')">Add New Task</button>
   </div>
-</section>
+
+  <!-- Create Project Form -->
+  <section *ngIf="mode==='create'" class="form">
+    <h2 class="heading">Create New Project</h2>
+    <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label class="label">Project ID
+          <input class="input" formControlName="projectId" type="number" />
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="label">Name
+          <input class="input" formControlName="name" type="text" />
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="label">Description
+          <textarea class="textarea" formControlName="description"></textarea>
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="label">Start Date
+          <input class="input" formControlName="startDate" type="date" />
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="label">End Date
+          <input class="input" formControlName="endDate" type="date" />
+        </label>
+      </div>
+      <button type="submit" class="button" [disabled]="projectForm.invalid">Create Project</button>
+    </form>
+
+    <div *ngIf="attachedTasks.length" class="attached-tasks">
+      <h3>Attached Tasks</h3>
+      <ul>
+        <li *ngFor="let task of attachedTasks">{{ task.title }}</li>
+      </ul>
+    </div>
+  </section>
 
 <!-- ADD EXISTING TASK -->
 <section *ngIf="mode==='addExisting'" class="panel existing-task">
@@ -67,4 +87,5 @@
 <div class="feedback">
   <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
   <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+</div>
 </div>
