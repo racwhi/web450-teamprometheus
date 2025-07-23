@@ -20,7 +20,7 @@ export interface Task {
   providedIn: 'root'
 })
 export class TasksService {
-  private apiUrl = `/api/tasks`;
+  private apiUrl = `tasks`;
 
   constructor(private http: HttpClient) { }
 

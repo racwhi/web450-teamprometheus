@@ -18,7 +18,7 @@ export interface Project {
   providedIn: 'root'
 })
 export class ProjectsService {
-  private apiUrl = '/api/projects';
+  private apiUrl = 'projects';
   constructor(private http: HttpClient) {}
 
   getProjects(): Observable<Project[]> {
