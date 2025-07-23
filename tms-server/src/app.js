@@ -53,4 +53,14 @@ app.use('/api/projects', projectRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+const path = require('path');
+
+// Serve Angular static files
+app.use(express.static(path.join(__dirname, '../../tms-client/dist/tms-client')));
+
+// Fallback to Angular's index.html for unknown routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../tms-client/dist/tms-client/index.html'));
+});
+
 module.exports = app;
