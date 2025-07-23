@@ -20,7 +20,7 @@ const projectRouter   = require('./routes/projects');
 const app = express();
 
 // ─── UNCONDITIONAL MONGODB CONNECT ────────────────────────────────────────────
-const mongoURI = 'mongodb+srv://web335Admin:Password01@tms-cluster.ebh5hd3.mongodb.net/tms?retryWrites=true&w=majority&appName=tms-cluster';
+const mongoURI = process.env.MONGODB_URI;
 
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log(`MongoDB connected to "${mongoose.connection.name}"`))
